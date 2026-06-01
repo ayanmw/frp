@@ -79,9 +79,10 @@ func newHTTPSBridgePluginServer(
 	keyPath string,
 	enableHTTP2 *bool,
 	useSourceRemoteAddr bool,
+	certPEM, keyPEM []byte,
 ) (*httpBridgePlugin, error) {
 	listener := NewProxyListener()
-	server, err := httpsserver.New(handler, crtPath, keyPath, enableHTTP2)
+	server, err := httpsserver.New(handler, crtPath, keyPath, enableHTTP2, certPEM, keyPEM)
 	if err != nil {
 		return nil, err
 	}

@@ -35,6 +35,12 @@ import (
 	"github.com/fatedier/frp/pkg/vnet"
 )
 
+// ServerCertSetter is implemented by proxies that support receiving
+// server-provided TLS certificates as a fallback for https2http/https2https plugins.
+type ServerCertSetter interface {
+	SetServerPluginCert(certPEM, keyPEM []byte)
+}
+
 const (
 	ProxyPhaseNew         = "new"
 	ProxyPhaseWaitStart   = "wait start"
@@ -135,7 +141,7 @@ func (pw *Wrapper) SetInWorkConnCallback(cb func(*v1.ProxyBaseConfig, net.Conn, 
 	pw.pxy.SetInWorkConnCallback(cb)
 }
 
-func (pw *Wrapper) SetRunningStatus(remoteAddr string, respErr string) error {
+func (pw *Wrapper) SetRunningStatus(remoteAddr string, respErr string, certPEM, keyPEM []byte) error {
 	pw.mu.Lock()
 	defer pw.mu.Unlock()
 	if pw.Phase != ProxyPhaseWaitStart {
@@ -148,6 +154,11 @@ func (pw *Wrapper) SetRunningStatus(remoteAddr string, respErr string) error {
 		pw.Err = respErr
 		pw.lastStartErr = time.Now()
 		return fmt.Errorf("%s", pw.Err)
+	}
+
+	// Set server-provided TLS certificate for https plugin fallback.
+	if setter, ok := pw.pxy.(ServerCertSetter); ok {
+		setter.SetServerPluginCert(certPEM, keyPEM)
 	}
 
 	if err := pw.pxy.Run(); err != nil {

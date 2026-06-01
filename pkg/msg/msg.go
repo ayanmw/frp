@@ -137,6 +137,12 @@ type NewProxyResp struct {
 	ProxyName  string `json:"proxy_name,omitempty"`
 	RemoteAddr string `json:"remote_addr,omitempty"`
 	Error      string `json:"error,omitempty"`
+
+	// VhostHTTPSPluginCertPEM is the PEM-encoded TLS certificate provided by
+	// frps as a fallback for https2http/https2https plugins on frpc.
+	VhostHTTPSPluginCertPEM []byte `json:"vhost_https_plugin_cert_pem,omitempty"`
+	// VhostHTTPSPluginKeyPEM is the PEM-encoded TLS key paired with the cert above.
+	VhostHTTPSPluginKeyPEM []byte `json:"vhost_https_plugin_key_pem,omitempty"`
 }
 
 type CloseProxy struct {

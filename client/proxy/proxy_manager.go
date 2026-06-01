@@ -64,7 +64,7 @@ func NewManager(
 	}
 }
 
-func (pm *Manager) StartProxy(name string, remoteAddr string, serverRespErr string) error {
+func (pm *Manager) StartProxy(name string, remoteAddr string, serverRespErr string, certPEM, keyPEM []byte) error {
 	pm.mu.RLock()
 	pxy, ok := pm.proxies[name]
 	pm.mu.RUnlock()
@@ -72,7 +72,7 @@ func (pm *Manager) StartProxy(name string, remoteAddr string, serverRespErr stri
 		return fmt.Errorf("proxy [%s] not found", name)
 	}
 
-	err := pxy.SetRunningStatus(remoteAddr, serverRespErr)
+	err := pxy.SetRunningStatus(remoteAddr, serverRespErr, certPEM, keyPEM)
 	if err != nil {
 		return err
 	}

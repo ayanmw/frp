@@ -31,6 +31,11 @@ import (
 type PluginContext struct {
 	Name           string
 	VnetController *vnet.Controller
+	// ServerCertPEM is the PEM-encoded server TLS certificate for
+	// https2http/https2https plugin fallback when the client has no local cert.
+	ServerCertPEM []byte
+	// ServerKeyPEM is the PEM-encoded private key paired with ServerCertPEM.
+	ServerKeyPEM []byte
 }
 
 // Creators is used for create plugins to handle connections.

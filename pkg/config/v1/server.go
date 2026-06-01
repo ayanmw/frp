@@ -51,6 +51,14 @@ type ServerConfig struct {
 	// Vhost requests. If this value is 0, the server will not listen for HTTPS
 	// requests.
 	VhostHTTPSPort int `json:"vhostHTTPSPort,omitempty"`
+	// VhostHTTPSPluginCertFile specifies the path to the TLS certificate file
+	// for https2http/https2https plugins on frpc. When frpc does not configure
+	// its own certificate, the server will provide this certificate as a
+	// fallback.
+	VhostHTTPSPluginCertFile string `json:"vhostHTTPSPluginCertFile,omitempty"`
+	// VhostHTTPSPluginKeyFile specifies the path to the TLS key file paired
+	// with VhostHTTPSPluginCertFile.
+	VhostHTTPSPluginKeyFile string `json:"vhostHTTPSPluginKeyFile,omitempty"`
 	// TCPMuxHTTPConnectPort specifies the port that the server listens for TCP
 	// HTTP CONNECT requests. If the value is 0, the server will not multiplex TCP
 	// requests on one single port. If it's not - it will listen on this value for

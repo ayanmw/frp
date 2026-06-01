@@ -158,7 +158,7 @@ func (ctl *Control) handleNewProxyResp(m msg.Message) {
 	// Server will return NewProxyResp message to each NewProxy message.
 	// Start a new proxy handler if no error got
 	proxyName := naming.StripUserPrefix(ctl.sessionCtx.Common.User, inMsg.ProxyName)
-	err := ctl.pm.StartProxy(proxyName, inMsg.RemoteAddr, inMsg.Error)
+	err := ctl.pm.StartProxy(proxyName, inMsg.RemoteAddr, inMsg.Error, inMsg.VhostHTTPSPluginCertPEM, inMsg.VhostHTTPSPluginKeyPEM)
 	if err != nil {
 		xl.Warnf("[%s] start error: %v", proxyName, err)
 	} else {

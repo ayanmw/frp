@@ -61,6 +61,13 @@ type ResourceController struct {
 
 	// All server manager plugin
 	PluginManager *plugin.Manager
+
+	// VhostHTTPSPluginCertPEM holds the PEM-encoded TLS certificate for
+	// https2http/https2https plugin fallback on frpc.
+	VhostHTTPSPluginCertPEM []byte
+	// VhostHTTPSPluginKeyPEM holds the PEM-encoded TLS key paired with
+	// VhostHTTPSPluginCertPEM.
+	VhostHTTPSPluginKeyPEM []byte
 }
 
 func (rc *ResourceController) Close() error {

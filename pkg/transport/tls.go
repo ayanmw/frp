@@ -125,6 +125,19 @@ func NewServerTLSConfig(certPath, keyPath, caPath string) (*tls.Config, error) {
 	return base, nil
 }
 
+// NewServerTLSConfigFromPEM creates a TLS server config from PEM-encoded
+// certificate and key data. This is used when cert/key are provided as raw
+// PEM bytes rather than file paths.
+func NewServerTLSConfigFromPEM(certPEM, keyPEM []byte) (*tls.Config, error) {
+	cert, err := tls.X509KeyPair(certPEM, keyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("load server TLS key pair from PEM: %w", err)
+	}
+	return &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}, nil
+}
+
 func NewClientTLSConfig(certPath, keyPath, caPath, serverName string) (*tls.Config, error) {
 	base := &tls.Config{}
 

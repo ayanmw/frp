@@ -34,7 +34,7 @@ type HTTPS2HTTPSPlugin struct {
 	*httpBridgePlugin
 }
 
-func NewHTTPS2HTTPSPlugin(_ PluginContext, options v1.ClientPluginOptions) (Plugin, error) {
+func NewHTTPS2HTTPSPlugin(pluginCtx PluginContext, options v1.ClientPluginOptions) (Plugin, error) {
 	opts := options.(*v1.HTTPS2HTTPSPluginOptions)
 
 	p := &HTTPS2HTTPSPlugin{
@@ -55,7 +55,7 @@ func NewHTTPS2HTTPSPlugin(_ PluginContext, options v1.ClientPluginOptions) (Plug
 		tr,
 	)
 
-	server, err := newHTTPSBridgePluginServer(rp, p.opts.CrtPath, p.opts.KeyPath, opts.EnableHTTP2, true)
+	server, err := newHTTPSBridgePluginServer(rp, p.opts.CrtPath, p.opts.KeyPath, opts.EnableHTTP2, true, pluginCtx.ServerCertPEM, pluginCtx.ServerKeyPEM)
 	if err != nil {
 		return nil, err
 	}

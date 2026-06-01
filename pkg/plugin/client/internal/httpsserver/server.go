@@ -28,8 +28,19 @@ import (
 	httppkg "github.com/fatedier/frp/pkg/util/http"
 )
 
-func New(handler http.Handler, crtPath, keyPath string, enableHTTP2 *bool) (*http.Server, error) {
-	tlsConfig, err := transport.NewServerTLSConfig(crtPath, keyPath, "")
+func New(handler http.Handler, crtPath, keyPath string, enableHTTP2 *bool, certPEM, keyPEM []byte) (*http.Server, error) {
+	var tlsConfig *tls.Config
+	var err error
+	if crtPath != "" && keyPath != "" {
+		// Use client-configured cert files.
+		tlsConfig, err = transport.NewServerTLSConfig(crtPath, keyPath, "")
+	} else if len(certPEM) > 0 && len(keyPEM) > 0 {
+		// Use server-provided cert as fallback.
+		tlsConfig, err = transport.NewServerTLSConfigFromPEM(certPEM, keyPEM)
+	} else {
+		// No cert configured; generate random self-signed cert.
+		tlsConfig, err = transport.NewServerTLSConfig("", "", "")
+	}
 	if err != nil {
 		return nil, fmt.Errorf("gen TLS config error: %v", err)
 	}

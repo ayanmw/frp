@@ -98,6 +98,10 @@ type BaseProxy struct {
 	proxyPlugin        plugin.Plugin
 	inWorkConnCallback func(*v1.ProxyBaseConfig, net.Conn, *msg.StartWorkConn) /* continue */ bool
 
+	// server-provided TLS certificate PEM data for https plugin fallback.
+	serverCertPEM []byte
+	serverKeyPEM  []byte
+
 	mu  sync.RWMutex
 	xl  *xlog.Logger
 	ctx context.Context
@@ -108,6 +112,8 @@ func (pxy *BaseProxy) Run() error {
 		p, err := plugin.Create(pxy.baseCfg.Plugin.Type, plugin.PluginContext{
 			Name:           pxy.baseCfg.Name,
 			VnetController: pxy.vnetController,
+			ServerCertPEM:  pxy.serverCertPEM,
+			ServerKeyPEM:   pxy.serverKeyPEM,
 		}, pxy.baseCfg.Plugin.ClientPluginOptions)
 		if err != nil {
 			return err
@@ -121,6 +127,13 @@ func (pxy *BaseProxy) Close() {
 	if pxy.proxyPlugin != nil {
 		pxy.proxyPlugin.Close()
 	}
+}
+
+// SetServerPluginCert sets server-provided TLS certificate data for use
+// as a fallback by https2http/https2https plugins.
+func (pxy *BaseProxy) SetServerPluginCert(certPEM, keyPEM []byte) {
+	pxy.serverCertPEM = certPEM
+	pxy.serverKeyPEM = keyPEM
 }
 
 // wrapWorkConn applies rate limiting, encryption, and compression

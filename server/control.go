@@ -365,6 +365,12 @@ func (ctl *Control) handleNewProxy(m msg.Message) {
 	resp := &msg.NewProxyResp{
 		ProxyName: inMsg.ProxyName,
 	}
+	// Include vhost HTTPS plugin TLS certificate as fallback for client-side
+	// https2http/https2https plugins.
+	if certPEM := ctl.sessionCtx.RC.VhostHTTPSPluginCertPEM; len(certPEM) > 0 {
+		resp.VhostHTTPSPluginCertPEM = certPEM
+		resp.VhostHTTPSPluginKeyPEM = ctl.sessionCtx.RC.VhostHTTPSPluginKeyPEM
+	}
 	if err != nil {
 		xl.Warnf("new proxy [%s] type [%s] error: %v", inMsg.ProxyName, inMsg.ProxyType, err)
 		resp.Error = util.GenerateResponseErrorString(fmt.Sprintf("new proxy [%s] error", inMsg.ProxyName),

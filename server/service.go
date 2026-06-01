@@ -206,6 +206,20 @@ func NewService(cfg *v1.ServerConfig) (*Service, error) {
 	}
 	svr.rc.PluginManager = svr.pluginManager
 
+	// Load vhost HTTPS plugin TLS certificate for https2http/https2https plugin fallback.
+	if cfg.VhostHTTPSPluginCertFile != "" && cfg.VhostHTTPSPluginKeyFile != "" {
+		certPEM, err := os.ReadFile(cfg.VhostHTTPSPluginCertFile)
+		if err != nil {
+			return nil, fmt.Errorf("load vhost https plugin cert file error: %v", err)
+		}
+		keyPEM, err := os.ReadFile(cfg.VhostHTTPSPluginKeyFile)
+		if err != nil {
+			return nil, fmt.Errorf("load vhost https plugin key file error: %v", err)
+		}
+		svr.rc.VhostHTTPSPluginCertPEM = certPEM
+		svr.rc.VhostHTTPSPluginKeyPEM = keyPEM
+	}
+
 	// Init group controller
 	svr.rc.TCPGroupCtl = group.NewTCPGroupCtl(svr.rc.TCPPortManager)
 
